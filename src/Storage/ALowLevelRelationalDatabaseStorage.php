@@ -195,6 +195,28 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 			: (int) $result;
 	}
 
+	/**
+	 * @param iterable $criteria
+	 *
+	 * @return int
+	 * @throws \Dibi\Exception
+	 */
+	public function deleteBy(iterable $criteria, ?int $limit = null): int
+	{
+		$result =  $this->connection->delete($this->tableName)
+			->where($criteria);
+
+		if (is_int($limit)) {
+			$result = $result->limit($limit);
+		}
+
+		$result = $result->execute(\dibi::AFFECTED_ROWS);
+
+		return $result instanceof Result
+			? $result->getRowCount()
+			: (int) $result;
+	}
+
 	/* ********************************** Low level helpers ********************************** */
 
 	/**

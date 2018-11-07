@@ -42,4 +42,7 @@ interface ILowLevelRelationalDatabaseStorage
 	 */
 	public function delete($id): ?int;
 
+	public function deleteBy(iterable $criteria, ?int $limit = null): int;
+
+
 }
