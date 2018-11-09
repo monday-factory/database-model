@@ -77,6 +77,7 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 
 		$result = $this->connection->select('*')
 			->from($this->tableName)
+			->where($this->idField . ' = ?', $id)
 			->setupResult('setRowFactory', [$this->rowFactoryClass, 'fromRow'])
 			->fetch();
 
