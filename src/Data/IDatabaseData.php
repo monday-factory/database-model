@@ -7,7 +7,7 @@ namespace MondayFactory\DatabaseModel\Data;
 interface IDatabaseData
 {
 
-	public static function fromData(iterable $data): IDatabaseData;
+	public static function fromData(array $data): IDatabaseData;
 
 	public static function fromRow(array $row): IDatabaseData;
 
