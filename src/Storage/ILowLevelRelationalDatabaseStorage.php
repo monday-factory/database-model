@@ -44,5 +44,4 @@ interface ILowLevelRelationalDatabaseStorage
 
 	public function deleteBy(iterable $criteria, ?int $limit = null): int;
 
-
 }
