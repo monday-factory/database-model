@@ -171,7 +171,7 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 	public function updateBy(iterable $criteria, iterable $data): int
 	{
 		$result = $this->connection->update($this->tableName, $data)
-			->where($criteria)
+			->where('%ex', $criteria)
 			->execute(\dibi::AFFECTED_ROWS);
 
 		return $result instanceof Result
@@ -205,7 +205,7 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 	public function deleteBy(iterable $criteria, ?int $limit = null): int
 	{
 		$result =  $this->connection->delete($this->tableName)
-			->where($criteria);
+			->where('%ex', $criteria);
 
 		if (is_int($limit)) {
 			$result = $result->limit($limit);
