@@ -97,7 +97,7 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 	{
 		$result = $this->connection->select('*')
 			->from($this->tableName)
-			->where($criteria)
+			->where('%ex', $criteria)
 			->setupResult('setRowFactory', [$this->rowFactoryClass, 'fromRow'])
 			->limit(1)
 			->fetch();
