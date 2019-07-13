@@ -22,7 +22,7 @@ phpstan-nette-2.4:
     stage: test-nette-2.4
     image: registry.gitlab.mondayfactory.cz/mondayfactory/php-apps-base/php-build:v7.2.8
     script:
-        - composer remove nette/utils --no-update
+        - composer remove nette/* --no-update
         - composer require nette/utils:"2.5.3 as 3.0.1"
         - echo "Running phpstan"
         - composer app:phpstan
@@ -30,7 +30,7 @@ phpcs-nette-2.4:
     stage: test-nette-2.4
     image: registry.gitlab.mondayfactory.cz/mondayfactory/php-apps-base/php-build:v7.2.8
     script:
-        - composer remove nette/utils --no-update
+        - composer remove nette/* --no-update
         - composer require nette/utils:"2.5.3 as 3.0.1"
         - echo "Running phpcs"
         - composer app:phpcs
