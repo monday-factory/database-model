@@ -1,18 +1,36 @@
 stages:
-    - test
-    - build
+    - test-nette-3.0
+    - test-nette-2.4
 
-phpstan:
-    stage: test
+phpstan-nette-3.0:
+    stage: test-nette-3.0
     image: registry.gitlab.mondayfactory.cz/mondayfactory/php-apps-base/php-build:v7.2.8
     script:
         - composer install -a --dev
         - echo "Running phpstan"
         - composer app:phpstan
-phpcs:
-    stage: test
+phpcs-nette-3.0:
+    stage: test-nette-3.0
     image: registry.gitlab.mondayfactory.cz/mondayfactory/php-apps-base/php-build:v7.2.8
     script:
         - composer install -a --dev
+        - echo "Running phpcs"
+        - composer app:phpcs
+
+# Both nette versions are supported, so tests both of them
+phpstan-nette-2.4:
+    stage: test-nette-2.4
+    image: registry.gitlab.mondayfactory.cz/mondayfactory/php-apps-base/php-build:v7.2.8
+    script:
+        - composer remove nette/utils --no-update
+        - composer require nette/utils:"2.5.3 as 3.0.1"
+        - echo "Running phpstan"
+        - composer app:phpstan
+phpcs-nette-2.4:
+    stage: test-nette-2.4
+    image: registry.gitlab.mondayfactory.cz/mondayfactory/php-apps-base/php-build:v7.2.8
+    script:
+        - composer remove nette/utils --no-update
+        - composer require nette/utils:"2.5.3 as 3.0.1"
         - echo "Running phpcs"
         - composer app:phpcs
