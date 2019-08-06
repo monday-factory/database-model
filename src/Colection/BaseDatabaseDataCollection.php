@@ -18,15 +18,25 @@ abstract class BaseDatabaseDataCollection implements IDatabaseDataCollection
 	private $data = [];
 
 	/**
+	 * @var string|null
+	 */
+	private $idFieldSerializer = null;
+
+	/**
+	 * @var string|null
+	 */
+	private $rowFieldGetter = null;
+
+	/**
 	 * @param array $data
 	 */
 	protected function __construct(iterable $data, string $colectionItemClass, ?string $idField = null)
 	{
-		$rowFieldGetter = !is_string($idField)
-			?: $rowFieldGetter = 'get' . preg_replace('/[-\_]/', '', Strings::capitalize(ucfirst($idField)));
+		$this->prepareRowFieldGetter($idField);
+		$rowFieldGetter = $this->rowFieldGetter;
 
 		/**
-		 * $row iterable
+		 * @var IDatabaseData $row
 		 */
 		foreach ($data as $row) {
 			if (! $row instanceof $colectionItemClass) {
@@ -37,19 +47,58 @@ abstract class BaseDatabaseDataCollection implements IDatabaseDataCollection
 					$colectionItemClass);
 			}
 
-			if (is_string($rowFieldGetter)) {
-				if (! method_exists($row, $rowFieldGetter)) {
-					throw new \InvalidArgumentException("{$rowFieldGetter} is not a valid getter of {$colectionItemClass}.");
-				} elseif (key_exists((string) $row->$rowFieldGetter(), $this->data)) {
+			if (is_string($this->rowFieldGetter)) {
+				if (! method_exists($row, $this->rowFieldGetter)) {
+					throw new \InvalidArgumentException("{$this->$rowFieldGetter} is not a valid getter of {$colectionItemClass}.");
+				} elseif (key_exists($this->getIdFieldValue($row), $this->data)) {
 					throw new \UnexpectedValueException("Collection must have only one piece {$idField} with value {$row->$rowFieldGetter()}. " .
 						'You must provide unique items if is set $idField.');
 				}
 
-				$this->data[(string) $row->$rowFieldGetter()] = $row;
+				$this->data[$this->getIdFieldValue($row)] = $row;
 			} else {
 				$this->data[] = $row;
 			}
 		}
+	}
+
+	/**
+	 * @param string|null $idField
+	 */
+	private function prepareRowFieldGetter(?string $idField): void
+	{
+		if (is_string($idField)) {
+			$idField = explode('->', $idField);
+
+			if (count($idField) === 2) {
+				$this->idFieldSerializer = preg_replace("/(\(.*\))/m",'', $idField[1]);
+			}
+
+			$idField = $idField[0];
+
+			$this->rowFieldGetter = 'get' . preg_replace('/[-\_]/', '', Strings::capitalize(ucfirst($idField)));
+		}
+	}
+
+	/**
+	 * @param IDatabaseData $row
+	 *
+	 * @return string
+	 */
+	private function getIdFieldValue(IDatabaseData $row): string
+	{
+		$rowFieldGetter = $this->rowFieldGetter;
+		$idFieldSerializer = $this->idFieldSerializer;
+
+		if (is_string($this->idFieldSerializer)) {
+			if (!method_exists($row->$rowFieldGetter(), (string) $idFieldSerializer)) {
+				throw new \InvalidArgumentException("Method does not exists " . get_class($row->$rowFieldGetter()) . "::{$idFieldSerializer}().");
+			}
+
+			return $row->$rowFieldGetter()->$idFieldSerializer();
+		}
+
+		return $row->$rowFieldGetter();
 	}
 
 	/**

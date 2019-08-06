@@ -199,7 +199,7 @@ This instance You use in High level Storage for communication with database. You
  
  and optional
  
- - `$idField` // Value of this database field is used as key in `Collection\IDatabaseDataCollection` if is set, otherwise is array indexed from zero. If is not `$idField` value of result set unique will be thrown `UnexpectedValueException`.
+ - `$idField` // Value of this database field is used as key in `Collection\IDatabaseDataCollection` if is set, otherwise is array indexed from zero. If is not `$idField` value of result set unique will be thrown `UnexpectedValueException`. As `$idField` definition You can use simple name e.g. 'id' for scalar values or You can use e.g. 'uuid->toString()' for serialize UuidInterface as key of collection items.
 
 ```php
 <?php
