@@ -123,7 +123,7 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 
 		$this->applyLimitAndOffset($query, $limit, $offset);
 
-		return $this->collectionFactory::create($query->fetchAll(), $this->idField);
+		return $this->createCollection($query->fetchAll());
 	}
 
 	/**
@@ -140,7 +140,7 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 
 		$this->applyLimitAndOffset($query, $limit, $offset);
 
-		return $this->collectionFactory::create($query->fetchAll(), $this->idField);
+		return $this->createCollection($query->fetchAll());
 	}
 
 	/**
@@ -276,6 +276,16 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 	public function getIdField(): string
 	{
 		return $this->idField;
+	}
+
+	/**
+	 * @param IDatabaseData[] $data
+	 *
+	 * @return IDatabaseDataCollection
+	 */
+	public function createCollection(array $data): IDatabaseDataCollection
+	{
+		return $this->collectionFactory::create($data, $this->idField);
 	}
 
 }
