@@ -96,9 +96,14 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 	public function findOneByCriteria(iterable $criteria): ?IDatabaseData
 	{
 		$result = $this->connection->select('*')
-			->from($this->tableName)
-			->where('%ex', $criteria)
-			->setupResult('setRowFactory', [$this->rowFactoryClass, 'fromRow'])
+			->from($this->tableName);
+
+		if (count($criteria) > 0) {
+			$result = $result
+				->where('%ex', $criteria);
+		}
+
+		$result = $result->setupResult('setRowFactory', [$this->rowFactoryClass, 'fromRow'])
 			->limit(1)
 			->fetch();
 
