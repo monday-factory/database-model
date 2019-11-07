@@ -132,6 +132,23 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 	}
 
 	/**
+	 * @param int|null $limit default null
+	 * @param int|null $offset default null
+	 *
+	 * @return IDatabaseDataCollection
+	 */
+	public function findAll(?int $limit = null, ?int $offset = null): IDatabaseDataCollection
+	{
+		$query = $this->connection->select('*')
+			->from($this->tableName)
+			->setupResult('setRowFactory', [$this->rowFactoryClass, 'fromRow']);
+
+		$this->applyLimitAndOffset($query, $limit, $offset);
+
+		return $this->createCollection($query->fetchAll());
+	}
+
+	/**
 	 * @param iterable $criteria
 	 *
 	 * @return IDatabaseDataCollection
