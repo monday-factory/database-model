@@ -252,7 +252,7 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 	public function applyLimitAndOffset(Fluent &$query, ?int $limit = null, ?int $offset = null): void
 	{
 		!is_int($limit) ?: $query = $query->limit($limit);
-		!is_int($offset) ?: $query = $query->limit($offset);
+		!is_int($offset) ?: $query = $query->offset($offset);
 	}
 
 	/**
