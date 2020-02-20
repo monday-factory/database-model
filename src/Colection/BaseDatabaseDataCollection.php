@@ -20,7 +20,7 @@ abstract class BaseDatabaseDataCollection implements IDatabaseDataCollection
 	/**
 	 * @var string|null
 	 */
-	private $idFieldSerializer = null;
+	protected $idFieldSerializer = null;
 
 	/**
 	 * @var string|null
@@ -68,14 +68,6 @@ abstract class BaseDatabaseDataCollection implements IDatabaseDataCollection
 	private function prepareRowFieldGetter(?string $idField): void
 	{
 		if (is_string($idField)) {
-			$idField = explode('->', $idField);
-
-			if (count($idField) === 2) {
-				$this->idFieldSerializer = preg_replace("/(\(.*\))/m",'', $idField[1]);
-			}
-
-			$idField = $idField[0];
-
 			$this->rowFieldGetter = 'get' . preg_replace('/[-\_]/', '', Strings::capitalize(ucfirst($idField)));
 		}
 	}
