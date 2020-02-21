@@ -11,6 +11,8 @@ abstract class ApitteRequestEntityFactory extends BasicEntity
 {
 	protected $entityClass;
 
+	protected $forceOptionalProperties = [];
+
 	/**
 	 * @param mixed[] $data
 	 * @return static
@@ -22,7 +24,6 @@ abstract class ApitteRequestEntityFactory extends BasicEntity
 		}
 
 		$inst = new static();
-
 		$ref = new \ReflectionClass($this->entityClass);
 		$parameters = $ref->getConstructor()->getParameters();
 
@@ -31,7 +32,11 @@ abstract class ApitteRequestEntityFactory extends BasicEntity
 		 */
 		foreach ($parameters as $parameter) {
 
-			if (! $parameter->isOptional() && !isset($data[$parameter->name])) {
+			if (
+				! $this->isForceOptional($parameter)
+				&& !$parameter->isOptional()
+				&& !isset($data[$parameter->name])
+			) {
 				throw ClientErrorException::create()
 					->withCode(400)
 					->withMessage("Parameter {$parameter->name} is required.");
@@ -46,6 +51,8 @@ abstract class ApitteRequestEntityFactory extends BasicEntity
 				$parameter->isOptional() && !isset($data[$parameter->name])
 			) {
 				$inst->{$parameter->name} = $parameter->getDefaultValue();
+			} elseif ($this->isForceOptional($parameter) && !isset($data[$parameter->name])) {
+				continue;
 			} else {
 				if (! $parameter->getType()->isBuiltin()) {
 					$paramFactory = "createParam" . ucfirst($parameter->name);
@@ -65,4 +72,10 @@ abstract class ApitteRequestEntityFactory extends BasicEntity
 
 		return $inst;
 	}
+
+	private function isForceOptional(\ReflectionParameter $parameter): bool
+	{
+		return in_array($parameter->name, $this->forceOptionalProperties);
+	}
+
 }
