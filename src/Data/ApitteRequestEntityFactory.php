@@ -44,6 +44,7 @@ abstract class ApitteRequestEntityFactory extends BasicEntity
 
 			if (
 				($parameter->allowsNull() && !$parameter->isOptional())
+				&& isset($data[$parameter->name])
 				&& ($data[$parameter->name] === null || $data[$parameter->name] === 'null')
 			) {
 				$inst->{$parameter->name} = null;
