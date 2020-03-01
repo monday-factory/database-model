@@ -75,13 +75,9 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 			throw new \InvalidArgumentException('Argument [id] must be scalar.' . gettype($id) . 'given.');
 		}
 
-		if (is_null($this->idField)) {
-			throw new \InvalidArgumentException("Table primary key is not specified. You cannot use method " . __METHOD__ . ".");
-		}
-
 		$result = $this->connection->select('*')
 			->from($this->tableName)
-			->where($this->idField . ' = ?', $id)
+			->where("[$this->idField]" . ' = ?', $id)
 			->setupResult('setRowFactory', [$this->rowFactoryClass, 'fromRow'])
 			->fetch();
 
@@ -125,13 +121,9 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 	 */
 	public function find(iterable $ids, ?int $limit = null, ?int $offset = null): IDatabaseDataCollection
 	{
-		if (is_null($this->idField)) {
-			throw new \InvalidArgumentException("Table primary key is not specified. You cannot use method " . __METHOD__ . ".");
-		}
-
 		$query = $this->connection->select('*')
 			->from($this->tableName)
-			->where($this->idField . 'IN(?)', $ids)
+			->where("[$this->idField]" . 'IN(?)', $ids)
 			->setupResult('setRowFactory', [$this->rowFactoryClass, 'fromRow']);
 
 		$this->applyLimitAndOffset($query, $limit, $offset);
@@ -182,12 +174,8 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 	 */
 	public function update($id, iterable $data): int
 	{
-		if (is_null($this->idField)) {
-			throw new \InvalidArgumentException("Table primary key is not specified. You cannot use method " . __METHOD__ . ".");
-		}
-
 		$result = $this->connection->update($this->tableName, $data)
-			->where($this->idField . ' = ?', $id)
+			->where("[$this->idField]" . ' = ?', $id)
 			->execute(\dibi::AFFECTED_ROWS);
 
 		return $result instanceof Result
@@ -221,12 +209,8 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 	 */
 	public function delete($id): int
 	{
-		if (is_null($this->idField)) {
-			throw new \InvalidArgumentException("Table primary key is not specified. You cannot use method " . __METHOD__ . ".");
-		}
-
 		$result =  $this->connection->delete($this->tableName)
-			->where($this->idField . ' = ?', $id)
+			->where("[$this->idField]" . ' = ?', $id)
 			->execute(\dibi::AFFECTED_ROWS);
 
 		return $result instanceof Result
