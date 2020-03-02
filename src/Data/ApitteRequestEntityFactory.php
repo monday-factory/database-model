@@ -75,13 +75,17 @@ abstract class ApitteRequestEntityFactory extends BasicEntity
 		foreach ($entityReflection->getProperties(\ReflectionProperty::IS_PUBLIC) as $additionalProperty) {
 			if (isset($data[$additionalProperty->name])) {
 				$inst->{$additionalProperty->name} = $data[$additionalProperty->name];
+			} elseif (! isset($data[$additionalProperty->name]) && ! $this->isForceOptional($additionalProperty)) {
+				throw ClientErrorException::create()
+					->withCode(400)
+					->withMessage("Parameter {$additionalProperty->name} is required.");
 			}
 		}
 
 		return $inst;
 	}
 
-	private function isForceOptional(\ReflectionParameter $parameter): bool
+	private function isForceOptional($parameter): bool
 	{
 		return in_array($parameter->name, $this->forceOptionalProperties);
 	}
