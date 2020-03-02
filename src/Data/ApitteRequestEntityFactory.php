@@ -71,6 +71,13 @@ abstract class ApitteRequestEntityFactory extends BasicEntity
 			}
 		}
 
+		$entityReflection = new \ReflectionClass(static::class);
+		foreach ($entityReflection->getProperties(\ReflectionProperty::IS_PUBLIC) as $additionalProperty) {
+			if (isset($data[$additionalProperty->name])) {
+				$inst->{$additionalProperty->name} = $data[$additionalProperty->name];
+			}
+		}
+
 		return $inst;
 	}
 
