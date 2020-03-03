@@ -20,7 +20,7 @@ class ApitteRequestCollectionFactory extends BasicEntity
 	 */
 	protected $entityFactory;
 
-	public function factory(array $data)
+	public function factory(array $data): self
 	{
 		if (! class_exists($this->entityFactory)) {
 			throw new \LogicException("Class [{$this->entityFactory}] is not exists.");
