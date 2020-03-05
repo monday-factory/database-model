@@ -260,11 +260,11 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 	 *
 	 * @return \Dibi\Fluent
 	 */
-	public function getTableFluent(string $selectSet = '*'): Fluent
+	public function getTableFluent(string $selectSet = '*', string $tableAlias = ''): Fluent
 	{
 		return $this->connection
 			->select($selectSet)
-			->from($this->tableName)
+			->from($this->tableName . ' ' . $tableAlias)
 			->setupResult('setRowFactory', [$this->rowFactoryClass, 'fromRow']);
 	}
 
