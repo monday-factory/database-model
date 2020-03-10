@@ -334,7 +334,7 @@ class Mediator
 
 ### config.neon
 
-```yaml
+```
 services:
 	- T2p\Common\Rancher\Service\Storage\StatusDatabaseLowLevelStorage
 	- T2p\Common\Rancher\Service\Storage\StatusDatabaseStorage
