@@ -4,75 +4,50 @@ declare(strict_types=1);
 
 namespace MondayFactory\DatabaseModel\Storage;
 
+use dibi;
 use Dibi\Connection;
 use Dibi\Expression;
 use Dibi\Fluent;
 use Dibi\Result;
-use MondayFactory\DatabaseModel\Colection\IDatabaseDataCollection;
+use InvalidArgumentException;
+use MondayFactory\DatabaseModel\Collection\IDatabaseDataCollection;
 use MondayFactory\DatabaseModel\Data\IDatabaseData;
 use MondayFactory\DatabaseModel\Exception\InvalidResultType;
 
 abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelationalDatabaseStorage
 {
 
-	/**
-	 * @var Connection
-	 */
-	private $connection;
+    protected string $tableName;
+    protected string $idField;
+    protected string $rowFactoryClass;
+    protected string $collectionFactory;
+	private Connection $connection;
 
-	/**
-	 * @var string
-	 */
-	protected $tableName;
-
-	/**
-	 * @var string
-	 */
-	protected $idField;
-
-	/**
-	 * @var string
-	 */
-	protected $rowFactoryClass;
-
-	/**
-	 * @var string
-	 */
-	protected $collectionFactory;
-
-	/**
-	 * @param Connection $connection
-	 */
 	public function __construct(Connection $connection)
 	{
 		$this->connection = $connection;
 	}
 
 	/**
-	 * @param iterable $data
+	 * @param iterable<int|string, mixed> $data
 	 *
-	 * @return int|null
 	 * @throws \Dibi\Exception
 	 */
 	public function create(iterable $data): ?int
 	{
 		$result = $this->connection->insert($this->tableName, $data)
-			->execute(\dibi::AFFECTED_ROWS);
+			->execute(dibi::AFFECTED_ROWS);
 
 		return $result instanceof Result
 			? $result->getRowCount()
 			: (int) $result;
 	}
 
-	/**
-	 * @param string|int $id
-	 *
-	 * @return IDatabaseData|null
-	 */
+	/** @param string|int $id */
 	public function findOne($id): ?IDatabaseData
 	{
-		if (! is_string($id) && ! is_int($id)) {
-			throw new \InvalidArgumentException('Argument [id] must be scalar.' . gettype($id) . 'given.');
+		if (!is_string($id) && !is_int($id)) {
+			throw new InvalidArgumentException('Argument [id] must be scalar.' . gettype($id) . 'given.');
 		}
 
 		$result = $this->connection->select('*')
@@ -85,15 +60,13 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 			return $result;
 		}
 
-		throw new InvalidResultType('Unexpected result type ' . gettype($result) . '. Expected result is null|'.IDatabaseData::class.'.');
+		throw new InvalidResultType(
+            'Unexpected result type ' . gettype($result) . '. Expected result is null|' . IDatabaseData::class . '.',
+        );
 	}
 
-	/**
-	 * @param iterable $criteria
-	 *
-	 * @return IDatabaseData|null
-	 */
-	public function findOneByCriteria(iterable $criteria): ?IDatabaseData
+	/** @param array <int|string, mixed> $criteria */
+	public function findOneByCriteria(array $criteria): ?IDatabaseData
 	{
 		$result = $this->connection->select('*')
 			->from($this->tableName);
@@ -111,15 +84,17 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 			return $result;
 		}
 
-		throw new InvalidResultType('Unexpected result type ' . gettype($result) . '. Expected result is null|'.IDatabaseData::class.'.');
+		throw new InvalidResultType(
+            'Unexpected result type ' . gettype($result) . '. Expected result is null|' . IDatabaseData::class . '.',
+        );
 	}
 
 	/**
-	 * @param iterable $ids
+	 * @param array<int|string, mixed> $ids
 	 *
-	 * @return IDatabaseDataCollection
+	 * @return IDatabaseDataCollection<int|string, IDatabaseData>
 	 */
-	public function find(iterable $ids, ?int $limit = null, ?int $offset = null): IDatabaseDataCollection
+	public function find(array $ids, ?int $limit = null, ?int $offset = null): IDatabaseDataCollection
 	{
 		$query = $this->connection->select('*')
 			->from($this->tableName)
@@ -135,7 +110,7 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 	 * @param int|null $limit default null
 	 * @param int|null $offset default null
 	 *
-	 * @return IDatabaseDataCollection
+	 * @return IDatabaseDataCollection<int|string, IDatabaseData>
 	 */
 	public function findAll(?int $limit = null, ?int $offset = null): IDatabaseDataCollection
 	{
@@ -149,11 +124,11 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 	}
 
 	/**
-	 * @param iterable $criteria
+	 * @param array<int|string, mixed> $criteria
 	 *
-	 * @return IDatabaseDataCollection
+	 * @return IDatabaseDataCollection<int|string, IDatabaseData>
 	 */
-	public function findByCriteria(iterable $criteria, ?int $limit = null, ?int $offset = null): IDatabaseDataCollection
+	public function findByCriteria(array $criteria, ?int $limit = null, ?int $offset = null): IDatabaseDataCollection
 	{
 		$query = $this->connection->select('*')
 			->from($this->tableName)
@@ -167,16 +142,13 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 
 	/**
 	 * @param string|int $id
-	 * @param iterable $data
-	 *
-	 * @return int
-	 * @throws \Dibi\Exception
+	 * @param iterable<int|string, mixed> $data
 	 */
 	public function update($id, iterable $data): int
 	{
 		$result = $this->connection->update($this->tableName, $data)
 			->where("[$this->idField]" . ' = ?', $id)
-			->execute(\dibi::AFFECTED_ROWS);
+			->execute(dibi::AFFECTED_ROWS);
 
 		return $result instanceof Result
 			? $result->getRowCount()
@@ -184,56 +156,43 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 	}
 
 	/**
-	 * @param iterable $criteria
-	 * @param iterable $data
-	 *
-	 * @return int
-	 * @throws \Dibi\Exception
+	 * @param array<int|string, mixed> $criteria
+	 * @param iterable<int|string, mixed> $data
 	 */
-	public function updateBy(iterable $criteria, iterable $data): int
+	public function updateBy(array $criteria, iterable $data): int
 	{
 		$result = $this->connection->update($this->tableName, $data)
 			->where('%ex', $criteria)
-			->execute(\dibi::AFFECTED_ROWS);
+			->execute(dibi::AFFECTED_ROWS);
 
 		return $result instanceof Result
 			? $result->getRowCount()
 			: (int) $result;
 	}
 
-	/**
-	 * @param string|int $id
-	 *
-	 * @return int
-	 * @throws \Dibi\Exception
-	 */
+	/** @param string|int $id */
 	public function delete($id): int
 	{
-		$result =  $this->connection->delete($this->tableName)
+		$result = $this->connection->delete($this->tableName)
 			->where("[$this->idField]" . ' = ?', $id)
-			->execute(\dibi::AFFECTED_ROWS);
+			->execute(dibi::AFFECTED_ROWS);
 
 		return $result instanceof Result
 			? $result->getRowCount()
 			: (int) $result;
 	}
 
-	/**
-	 * @param iterable $criteria
-	 *
-	 * @return int
-	 * @throws \Dibi\Exception
-	 */
-	public function deleteBy(iterable $criteria, ?int $limit = null): int
+	/** @param array<int|string, mixed> $criteria */
+	public function deleteBy(array $criteria, ?int $limit = null): int
 	{
-		$result =  $this->connection->delete($this->tableName)
+		$result = $this->connection->delete($this->tableName)
 			->where('%ex', $criteria);
 
 		if (is_int($limit)) {
 			$result = $result->limit($limit);
 		}
 
-		$result = $result->execute(\dibi::AFFECTED_ROWS);
+		$result = $result->execute(dibi::AFFECTED_ROWS);
 
 		return $result instanceof Result
 			? $result->getRowCount()
@@ -242,24 +201,17 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 
 	/* ********************************** Low level helpers ********************************** */
 
-	/**
-	 * @param Fluent $query
-	 * @param int|null $limit
-	 * @param int|null $offset
-	 *
-	 * @return void
-	 */
 	public function applyLimitAndOffset(Fluent &$query, ?int $limit = null, ?int $offset = null): void
 	{
-		!is_int($limit) ?: $query = $query->limit($limit);
-		!is_int($offset) ?: $query = $query->offset($offset);
+		if (is_int($limit)) {
+			$query = $query->limit($limit);
+		}
+
+		if (is_int($offset)) {
+			$query = $query->offset($offset);
+		}
 	}
 
-	/**
-	 * @param string $selectSet
-	 *
-	 * @return \Dibi\Fluent
-	 */
 	public function getTableFluent(string $selectSet = '*', string $tableAlias = ''): Fluent
 	{
 		return $this->connection
@@ -268,42 +220,30 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 			->setupResult('setRowFactory', [$this->rowFactoryClass, 'fromRow']);
 	}
 
-	/**
-	 * @return \Dibi\Expression
-	 */
 	public function getExpression(): Expression
 	{
 		return $this->connection::expression(func_get_args());
 	}
 
-	/**
-	 * @return Connection
-	 */
 	public function getConnection(): Connection
 	{
 		return $this->connection;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getTableName(): string
 	{
 		return $this->tableName;
 	}
 
-	/**
-	 * @return string
-	 */
 	public function getIdField(): string
 	{
 		return $this->idField;
 	}
 
 	/**
-	 * @param IDatabaseData[] $data
+	 * @param array<IDatabaseData> $data
 	 *
-	 * @return IDatabaseDataCollection
+	 * @return IDatabaseDataCollection<int|string, IDatabaseData>
 	 */
 	public function createCollection(array $data): IDatabaseDataCollection
 	{

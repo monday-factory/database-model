@@ -4,44 +4,51 @@ declare(strict_types=1);
 
 namespace MondayFactory\DatabaseModel\Storage;
 
-use MondayFactory\DatabaseModel\Colection\IDatabaseDataCollection;
+use MondayFactory\DatabaseModel\Collection\IDatabaseDataCollection;
 use MondayFactory\DatabaseModel\Data\IDatabaseData;
 
 interface ILowLevelRelationalDatabaseStorage
 {
 
+	/** @param iterable<int|string, mixed> $data */
 	public function create(iterable $data): ?int;
 
-	/**
-	 * @param string|int $id
-	 *
-	 * @return IDatabaseData|null
-	 */
+	/** @param string|int $id */
 	public function findOne($id): ?IDatabaseData;
 
-	public function findOneByCriteria(iterable $criteria): ?IDatabaseData;
+	/** @param array<int|string, mixed> $criteria */
+	public function findOneByCriteria(array $criteria): ?IDatabaseData;
 
-	public function find(iterable $ids): IDatabaseDataCollection;
+	/**
+	 * @param array<int|string, mixed> $ids
+	 *
+	 * @return IDatabaseDataCollection<int|string, IDatabaseData>
+	 */
+	public function find(array $ids): IDatabaseDataCollection;
 
-	public function findByCriteria(iterable $criteria): IDatabaseDataCollection;
+	/**
+	 * @param array<int|string, mixed> $criteria
+	 *
+	 * @return IDatabaseDataCollection<int|string, IDatabaseData>
+	 */
+	public function findByCriteria(array $criteria): IDatabaseDataCollection;
 
 	/**
 	 * @param string|int $id
-	 * @param iterable $data
-	 *
-	 * @return int
+	 * @param iterable<int|string, mixed> $data
 	 */
 	public function update($id, iterable $data): int;
 
-	public function updateBy(iterable $criteria, iterable $data): int;
-
 	/**
-	 * @param string|int $id
-	 *
-	 * @return int|null
-	 */
+	 * @param array<int|string, mixed> $criteria
+	 * @param iterable<int|string, mixed> $data
+     */
+	public function updateBy(array $criteria, iterable $data): int;
+
+	/** @param string|int $id */
 	public function delete($id): ?int;
 
-	public function deleteBy(iterable $criteria, ?int $limit = null): int;
+	/** @param array<int|string, mixed> $criteria */
+	public function deleteBy(array $criteria, ?int $limit = null): int;
 
 }

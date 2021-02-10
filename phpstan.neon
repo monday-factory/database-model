@@ -1,2 +1,13 @@
 includes:
 	- vendor/monday-factory/php-code-checker/phpstan.neon
+
+parameters:
+	treatPhpDocTypesAsCertain: false
+	ignoreErrors:
+		- '/Variable method call/'
+		- '/Variable property access/'
+		- '/::current\(\) should be covariant with return type/'
+	excludes_analyse:
+		- ./src/Collection/ApitteRequestCollectionFactory.php
+		- ./src/Collection/ApitteRequestEntityFactory.php
+		- ./src/Data/ApitteRequestEntityFactory.php

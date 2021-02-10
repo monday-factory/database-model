@@ -249,7 +249,7 @@ declare(strict_types=1);
 
 namespace T2p\Common\Rancher\Service\Storage;
 
-use MondayFactory\DatabaseModel\Colection\IDatabaseDataCollection;
+use MondayFactory\DatabaseModel\Collection\IDatabaseDataCollection;
 use MondayFactory\DatabaseModel\Storage\IRelationalDatabaseStorage;
 use MondayFactory\DatabaseModel\Storage\IStorage;
 

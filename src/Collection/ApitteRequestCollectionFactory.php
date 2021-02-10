@@ -2,28 +2,26 @@
 
 declare(strict_types=1);
 
-namespace MondayFactory\DatabaseModel\Colection;
+namespace MondayFactory\DatabaseModel\Collection;
 
 use Apitte\Core\Mapping\Request\BasicEntity;
 use ArrayIterator;
+use LogicException;
 use Traversable;
 
 class ApitteRequestCollectionFactory extends BasicEntity
 {
-	/**
-	 * @var array
-	 */
-	private $data;
 
-	/**
-	 * @var string
-	 */
-	protected $entityFactory;
+	protected string $entityFactory;
 
+	/** @var array<int|string, mixed> $data */
+	private array $data;
+
+	/** @param iterable<int|string, mixed> $data */
 	public function factory(array $data): self
 	{
-		if (! class_exists($this->entityFactory)) {
-			throw new \LogicException("Class [{$this->entityFactory}] is not exists.");
+		if (!class_exists($this->entityFactory)) {
+			throw new LogicException("Class [{$this->entityFactory}] is not exists.");
 		}
 
 		foreach ($data as $row) {
@@ -34,17 +32,13 @@ class ApitteRequestCollectionFactory extends BasicEntity
 		return $this;
 	}
 
-	/**
-	 * @return ArrayIterator|Traversable|mixed[]
-	 */
+	/** @return ArrayIterator|Traversable|array<mixed> */
 	public function getIterator(): iterable
 	{
 		return new ArrayIterator($this->data);
 	}
 
-	/**
-	 * @return array
-	 */
+	/** @return array<int, mixed> */
 	public function toArray(): array
 	{
 		$result = [];
@@ -56,23 +50,17 @@ class ApitteRequestCollectionFactory extends BasicEntity
 		return $result;
 	}
 
-	/**
-	 * @return int
-	 */
 	public function count(): int
 	{
 		return count($this->data);
 	}
-
 
 	public function rewind(): void
 	{
 		reset($this->data);
 	}
 
-	/**
-	 * @return int|mixed|null|string
-	 */
+	/** @return int|mixed|null|string */
 	public function key()
 	{
 		return key($this->data);
@@ -83,19 +71,15 @@ class ApitteRequestCollectionFactory extends BasicEntity
 		next($this->data);
 	}
 
-	/**
-	 * @return bool
-	 */
 	public function valid(): bool
 	{
 		return key($this->data) !== null;
 	}
 
-	/**
-	 * @return mixed
-	 */
+	/** @return mixed */
 	public function current()
 	{
 		return current($this->data);
 	}
+
 }
