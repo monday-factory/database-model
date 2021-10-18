@@ -64,6 +64,11 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 			: (int) $result;
 	}
 
+	public function createFromDataObject(IDatabaseData $data): ?int
+	{
+		return $this->create($data->toDatabaseArray());
+	}
+
 	/**
 	 * @param string|int $id
 	 *
