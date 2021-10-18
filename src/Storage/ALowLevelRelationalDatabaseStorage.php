@@ -23,22 +23,22 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 	/**
 	 * @var string
 	 */
-	protected $tableName;
+	protected string $tableName;
 
 	/**
 	 * @var string
 	 */
-	protected $idField;
+	protected string $idField;
 
 	/**
 	 * @var string
 	 */
-	protected $rowFactoryClass;
+	protected string $rowFactoryClass;
 
 	/**
 	 * @var string
 	 */
-	protected $collectionFactory;
+	protected string $collectionFactory;
 
 	/**
 	 * @param Connection $connection

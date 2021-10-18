@@ -20,7 +20,7 @@ abstract class BaseDatabaseDataCollection implements IDatabaseDataCollection
 	/**
 	 * @var string|null
 	 */
-	protected $idFieldSerializer = null;
+	protected string $idFieldSerializer;
 
 	/**
 	 * @var string|null
