@@ -48,7 +48,9 @@ abstract class BaseDatabaseDataCollection implements IDatabaseDataCollection
 			}
 
 			if (is_string($this->rowFieldGetter)) {
-				if (! method_exists($row, $this->rowFieldGetter)) {
+				$getterTest = [];
+				preg_match('/(\-\>|::)?(?<method>[a-zA-Z0-9]+)[\(\)]*/m', $this->rowFieldGetter, $getterTest);
+				if (!array_key_exists('method', $getterTest) || ! method_exists($row, $getterTest['method'])) {
 					throw new \InvalidArgumentException("{$this->$rowFieldGetter} is not a valid getter of {$colectionItemClass}.");
 				} elseif (key_exists($this->getIdFieldValue($row), $this->data)) {
 					throw new \UnexpectedValueException("Collection must have only one piece {$idField} with value {$row->$rowFieldGetter()}. " .
@@ -83,10 +85,14 @@ abstract class BaseDatabaseDataCollection implements IDatabaseDataCollection
 		$idFieldSerializer = $this->idFieldSerializer;
 
 		if (is_string($this->idFieldSerializer)) {
-			if (!method_exists($row->$rowFieldGetter(), (string) $idFieldSerializer)) {
+			$getterTest = [];
+			preg_match('/(\-\>|::)?(?<method>[a-zA-Z0-9]+)[\(\)]*/m', $this->idFieldSerializer, $getterTest);
+
+			if (!array_key_exists('method', $getterTest) || !method_exists($row->$rowFieldGetter(), $getterTest['method'])) {
 				throw new \InvalidArgumentException("Method does not exists " . get_class($row->$rowFieldGetter()) . "::{$idFieldSerializer}().");
 			}
 
+			$idFieldSerializer = $getterTest['method'];
 			return $row->$rowFieldGetter()->$idFieldSerializer();
 		}
 
