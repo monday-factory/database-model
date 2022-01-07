@@ -127,12 +127,19 @@ abstract class BaseDatabaseDataCollection implements IDatabaseDataCollection
 	/**
 	 * @return array
 	 */
-	public function toArray(): array
+	public function toArray($forceScalars = false): array
 	{
 		$result = [];
 
+		/**
+		 * @var IDatabaseData $item
+		 */
 		foreach ($this->data as $item) {
-			$result[] = $item->toArray();
+			if (! $forceScalars) {
+				$result[] = $item->toArray();
+			} else {
+				$result[] = $item->toDatabaseArray();
+			}
 		}
 
 		return $result;
