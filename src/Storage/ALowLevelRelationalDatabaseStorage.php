@@ -269,7 +269,7 @@ abstract class ALowLevelRelationalDatabaseStorage implements ILowLevelRelational
 	{
 		return $this->connection
 			->select($selectSet)
-			->from($this->tableName . ' ' . $tableAlias)
+			->from('[' . $this->tableName . '] ' . $tableAlias)
 			->setupResult('setRowFactory', [$this->rowFactoryClass, 'fromRow']);
 	}
 
