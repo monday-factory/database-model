@@ -170,7 +170,7 @@ abstract class BaseDatabaseDataCollection implements IDatabaseDataCollection
 	/**
 	 * @return int|mixed|null|string
 	 */
-	public function key()
+	public function key(): mixed
 	{
 		return key($this->data);
 	}
@@ -191,7 +191,7 @@ abstract class BaseDatabaseDataCollection implements IDatabaseDataCollection
 	/**
 	 * @return mixed
 	 */
-	public function current()
+	public function current(): mixed
 	{
 		return current($this->data);
 	}
