@@ -22,12 +22,12 @@
 	"repositories": {
 		"code-checker": {
 			"type": "vcs",
-			"url": "https://gitlab.mondayfactory.cz/mondayfactory/php-code-checker.git"
+			"url": "ssh://git@gitlab.mondayfactory.cz:2222/mondayfactory/php-code-checker.git"
 		}
 	},
 	"require": {
 		"php": "^8.0",
-		"nette/utils": "^2.4 | ^3.0",
+		"nette/utils": "^2.4 | ^3.0 | ^4.0",
 		"dibi/dibi": "^4.0",
 		"ramsey/collection": "2.0.0"
 	},
