@@ -20,7 +20,7 @@ abstract class BaseDatabaseDataCollection implements IDatabaseDataCollection
 	/**
 	 * @var string|null
 	 */
-	protected string $idFieldSerializer;
+	protected ?string $idFieldSerializer = null;
 
 	/**
 	 * @var string|null
@@ -79,7 +79,7 @@ abstract class BaseDatabaseDataCollection implements IDatabaseDataCollection
 	 *
 	 * @return string
 	 */
-	private function getIdFieldValue(IDatabaseData $row): string
+	private function getIdFieldValue(IDatabaseData $row): int|string
 	{
 		$rowFieldGetter = $this->rowFieldGetter;
 		$idFieldSerializer = $this->idFieldSerializer;
